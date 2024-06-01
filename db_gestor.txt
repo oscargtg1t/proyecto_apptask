@@ -42,8 +42,8 @@ insert into db_gestor.usuarios(nombre_usuario, correo_usuario, pass_usuario, id_
 
 
 select * from db_gestor.usuarios;
--- SELECT nombre_usuario FROM db_gestor.usuarios WHERE correo_usuario='pablomarmol@apptask.com';
--- SELECT * FROM db_gestor.usuarios WHERE correo_usuario='pablomarmol@apptask.com' && pass_usuario='@apptask123';
+SELECT nombre_usuario FROM db_gestor.usuarios WHERE correo_usuario='pablomarmol@apptask.com';
+SELECT * FROM db_gestor.usuarios WHERE correo_usuario='pablomarmol@apptask.com' && pass_usuario='@apptask123';
       
 
 create table db_gestor.turnos(
@@ -96,3 +96,150 @@ insert into db_gestor.actividades(nombre_actividad, descripcion, id_horario, id_
 
 
 select * from db_gestor.actividades;
+
+-- bitacoras y triggers
+CREATE TABLE db_gestor.bitacora_usuarios (
+    id_bitacora INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT,
+    nombre_usuario VARCHAR(60),
+    correo_usuario VARCHAR(60),
+    pass_usuario VARCHAR(60),
+    id_rol INT,
+    id_estado INT,
+    accion VARCHAR(10), -- 'UPDATE' o 'DELETE'
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+);
+select * from db_gestor.bitacora_usuarios;
+
+CREATE TABLE db_gestor.bitacora_horarios (
+    id_bitacora INT AUTO_INCREMENT PRIMARY KEY,
+    id_horario INT,
+    nombre_horario VARCHAR(60),
+    descripcion VARCHAR(60),
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    id_turno INT,
+    accion VARCHAR(10), -- 'UPDATE' o 'DELETE'
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_horario) REFERENCES horarios(id_horario)
+);
+select * from db_gestor.bitacora_horarios;
+
+CREATE TABLE db_gestor.bitacora_actividades (
+    id_bitacora INT AUTO_INCREMENT PRIMARY KEY,
+    id_actividad INT,
+    nombre_actividad VARCHAR(60),
+    descripcion VARCHAR(60),
+    id_horario INT,
+    id_usuario INT,
+    accion VARCHAR(10), -- 'UPDATE' o 'DELETE'
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_actividad) REFERENCES actividades(id_actividad)
+);
+select * from db_gestor.bitacora_actividades;
+
+
+-- triggers---------------------------
+-- Trigger para INSERT en usuarios
+DELIMITER $$
+CREATE TRIGGER db_gestor.trg_insert_usuarios 
+AFTER INSERT ON db_gestor.usuarios
+FOR EACH ROW
+BEGIN
+    INSERT INTO db_gestor.bitacora_usuarios (id_usuario, nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado, accion)
+    VALUES (NEW.id_usuario, NEW.nombre_usuario, NEW.correo_usuario, NEW.pass_usuario, NEW.id_rol, NEW.id_estado, 'INSERT');
+END $$
+DELIMITER ;
+
+-- Trigger para UPDATE en usuarios
+DELIMITER $$
+CREATE TRIGGER db_gestor.trg_update_usuarios 
+AFTER UPDATE ON db_gestor.usuarios
+FOR EACH ROW
+BEGIN
+    INSERT INTO db_gestor.bitacora_usuarios (id_usuario, nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado, accion)
+    VALUES (NEW.id_usuario, NEW.nombre_usuario, NEW.correo_usuario, NEW.pass_usuario, NEW.id_rol, NEW.id_estado, 'UPDATE');
+END $$
+DELIMITER ;
+
+-- Trigger para DELETE en usuarios
+DELIMITER $$
+CREATE TRIGGER db_gestor.trg_delete_usuarios 
+AFTER DELETE ON db_gestor.usuarios
+FOR EACH ROW
+BEGIN
+    INSERT INTO db_gestor.bitacora_usuarios (id_usuario, nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado, accion)
+    VALUES (OLD.id_usuario, OLD.nombre_usuario, OLD.correo_usuario, OLD.pass_usuario, OLD.id_rol, OLD.id_estado, 'DELETE');
+END $$
+DELIMITER ;
+
+
+
+-- Trigger para INSERT en horarios
+DELIMITER $$
+CREATE TRIGGER db_gestor.trg_insert_horarios 
+AFTER INSERT ON db_gestor.horarios
+FOR EACH ROW
+BEGIN
+    INSERT INTO db_gestor.bitacora_horarios (id_horario, nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno, accion)
+    VALUES (NEW.id_horario, NEW.nombre_horario, NEW.descripcion, NEW.fecha_inicio, NEW.fecha_fin, NEW.id_turno, 'INSERT');
+END $$
+DELIMITER ;
+
+-- Trigger para UPDATE en horarios
+DELIMITER $$
+CREATE TRIGGER db_gestor.trg_update_horarios 
+AFTER UPDATE ON db_gestor.horarios
+FOR EACH ROW
+BEGIN
+    INSERT INTO db_gestor.bitacora_horarios (id_horario, nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno, accion)
+    VALUES (NEW.id_horario, NEW.nombre_horario, NEW.descripcion, NEW.fecha_inicio, NEW.fecha_fin, NEW.id_turno, 'UPDATE');
+END $$
+DELIMITER ;
+
+-- Trigger para DELETE en horarios
+DELIMITER $$
+CREATE TRIGGER db_gestor.trg_delete_horarios 
+AFTER DELETE ON db_gestor.horarios
+FOR EACH ROW
+BEGIN
+    INSERT INTO db_gestor.bitacora_horarios (id_horario, nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno, accion)
+    VALUES (OLD.id_horario, OLD.nombre_horario, OLD.descripcion, OLD.fecha_inicio, OLD.fecha_fin, OLD.id_turno, 'DELETE');
+END $$
+DELIMITER ;
+
+
+
+-- Trigger para INSERT en actividades
+DELIMITER $$
+CREATE TRIGGER db_gestor.trg_insert_actividades 
+AFTER INSERT ON db_gestor.actividades
+FOR EACH ROW
+BEGIN
+    INSERT INTO db_gestor.bitacora_actividades (id_actividad, nombre_actividad, descripcion, id_horario, id_usuario, accion)
+    VALUES (NEW.id_actividad, NEW.nombre_actividad, NEW.descripcion, NEW.id_horario, NEW.id_usuario, 'INSERT');
+END $$
+DELIMITER ;
+
+-- Trigger para UPDATE en actividades
+DELIMITER $$
+CREATE TRIGGER db_gestor.trg_update_actividades 
+AFTER UPDATE ON db_gestor.actividades
+FOR EACH ROW
+BEGIN
+    INSERT INTO db_gestor.bitacora_actividades (id_actividad, nombre_actividad, descripcion, id_horario, id_usuario, accion)
+    VALUES (NEW.id_actividad, NEW.nombre_actividad, NEW.descripcion, NEW.id_horario, NEW.id_usuario, 'UPDATE');
+END $$
+DELIMITER ;
+
+-- Trigger para DELETE en actividades
+DELIMITER $$
+CREATE TRIGGER db_gestor.trg_delete_actividades 
+AFTER DELETE ON db_gestor.actividades
+FOR EACH ROW
+BEGIN
+    INSERT INTO db_gestor.bitacora_actividades (id_actividad, nombre_actividad, descripcion, id_horario, id_usuario, accion)
+    VALUES (OLD.id_actividad, OLD.nombre_actividad, OLD.descripcion, OLD.id_horario, OLD.id_usuario, 'DELETE');
+END $$
+DELIMITER ;
