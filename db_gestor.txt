@@ -1,0 +1,98 @@
+-- create database db_gestor;
+-- drop database db_gestor;
+
+create table db_gestor.roles(
+	id_rol int auto_increment primary key,
+    nombre_rol varchar(15) not null
+);
+insert into db_gestor.roles(nombre_rol) values ('Administrador');
+insert into db_gestor.roles(nombre_rol) values ('Empleado');
+
+select * from db_gestor.roles;
+
+create table db_gestor.estados(
+	id_estado int auto_increment primary key,
+    nombre_estado varchar(15) not null
+);
+insert into db_gestor.estados(nombre_estado) values ('Disponible');
+insert into db_gestor.estados(nombre_estado) values ('No Disponible');
+
+select * from db_gestor.estados;
+
+create table db_gestor.usuarios(
+	id_usuario int auto_increment primary key,
+    nombre_usuario varchar(60) not null,
+    correo_usuario varchar(60) not null,
+    pass_usuario varchar(60) not null,
+    id_rol int not null,
+    id_estado int not null,
+    FOREIGN KEY (id_rol) REFERENCES roles(id_rol),
+    FOREIGN KEY (id_estado) REFERENCES estados(id_estado)
+);
+insert into db_gestor.usuarios(nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado) values ('Pablo Marmol','pablomarmol@apptask.com','@apptask123', '1', '1');
+insert into db_gestor.usuarios(nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado) values ('Pedro Picapiedras','pedropiedra@apptask.com','@apptask123', '1', '1');
+insert into db_gestor.usuarios(nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado) values ('Luis Garcia','lgarcia@apptask.com','@apptask123', '2', '1');
+insert into db_gestor.usuarios(nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado) values ('Carlos Perez','perezcarlos@apptask.com','@apptask123', '2', '1');
+insert into db_gestor.usuarios(nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado) values ('Paola Martinez','paomartinez@apptask.com','@apptask123', '2', '1');
+insert into db_gestor.usuarios(nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado) values ('Karen Estrada','karenest@apptask.com','@apptask123', '2', '1');
+insert into db_gestor.usuarios(nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado) values ('Lucas Aguirre','lucaguirre@apptask.com','@apptask123', '2', '1');
+insert into db_gestor.usuarios(nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado) values ('Cesar Perez','perezcesar1@apptask.com','@apptask123', '2', '1');
+insert into db_gestor.usuarios(nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado) values ('Diana Hernandez','dianaher@apptask.com','@apptask123', '1', '1');
+insert into db_gestor.usuarios(nombre_usuario, correo_usuario, pass_usuario, id_rol, id_estado) values ('Jessi Barrios','jessibarrios1@apptask.com','@apptask123', '2', '1');
+
+
+select * from db_gestor.usuarios;
+-- SELECT nombre_usuario FROM db_gestor.usuarios WHERE correo_usuario='pablomarmol@apptask.com';
+-- SELECT * FROM db_gestor.usuarios WHERE correo_usuario='pablomarmol@apptask.com' && pass_usuario='@apptask123';
+      
+
+create table db_gestor.turnos(
+	id_turno int auto_increment primary key,
+    nombre_turno varchar(15) not null
+);
+insert into db_gestor.turnos(nombre_turno) values ('Diurno');
+insert into db_gestor.turnos(nombre_turno) values ('Nocturno');
+
+select * from db_gestor.turnos;
+
+ -- drop table db_gestor.horarios;
+create table db_gestor.horarios(
+	id_horario int auto_increment primary key,
+    nombre_horario varchar(60) not null,
+    descripcion varchar(60) not null,
+    fecha_inicio date not null,
+    fecha_fin date not null,
+    id_turno int not null,
+    FOREIGN KEY (id_turno) REFERENCES turnos(id_turno)
+);
+insert into db_gestor.horarios(nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno) values ('Horario 1','desarrollo de aplicacion contable','2024-04-25', '2024-05-10','1');
+insert into db_gestor.horarios(nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno) values ('Horario 2','desarrollo de aplicacion pdf','2024-04-25', '2024-05-05','2');
+insert into db_gestor.horarios(nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno) values ('Horario 3','desarrollo de aplicacion qr','2024-05-01', '2024-05-10','2');
+insert into db_gestor.horarios(nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno) values ('Horario 4','desarrollo de aplicacion web','2024-04-25', '2024-06-10','1');
+insert into db_gestor.horarios(nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno) values ('Horario 5','desarrollo de aplicacion movil','2024-04-25', '2024-06-05','2');
+insert into db_gestor.horarios(nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno) values ('Horario 6','desarrollo de backend app','2024-05-01', '2024-07-10','2');
+insert into db_gestor.horarios(nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno) values ('Horario 7','desarrollo de documentacion','2024-04-25', '2024-6-10','1');
+insert into db_gestor.horarios(nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno) values ('Horario 8','desarrollo de diagramas','2024-04-25', '2024-06-05','2');
+insert into db_gestor.horarios(nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno) values ('Horario 9','desarrollo de CU','2024-05-01', '2024-07-10','2');
+insert into db_gestor.horarios(nombre_horario, descripcion, fecha_inicio, fecha_fin, id_turno) values ('Horario 10','pruebas de app','2024-04-25', '2024-07-10','1');
+
+select * from db_gestor.horarios;
+
+create table db_gestor.actividades(
+	id_actividad int auto_increment primary key,
+    nombre_actividad varchar(60) not null,
+    descripcion varchar(60) not null,
+    id_horario int not null,
+    id_usuario int not null,
+    FOREIGN KEY (id_horario) REFERENCES horarios(id_horario),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+);
+insert into db_gestor.actividades(nombre_actividad, descripcion, id_horario, id_usuario) values ('desarrollo de login','creacion de login usuario','1', '1');
+insert into db_gestor.actividades(nombre_actividad, descripcion, id_horario, id_usuario) values ('desarrollo de dashboard','creacion de dashboard usuario','2','2');
+insert into db_gestor.actividades(nombre_actividad, descripcion, id_horario, id_usuario) values ('desarrollo de listas','creacion de listas','1','3');
+insert into db_gestor.actividades(nombre_actividad, descripcion, id_horario, id_usuario) values ('pruebas funcionales','pruebas de login user','1', '4');
+insert into db_gestor.actividades(nombre_actividad, descripcion, id_horario, id_usuario) values ('pruebas de carga','pruebas de login','2','6');
+insert into db_gestor.actividades(nombre_actividad, descripcion, id_horario, id_usuario) values ('desarrollo de formulario','creacion de formularios','3','5');
+
+
+select * from db_gestor.actividades;

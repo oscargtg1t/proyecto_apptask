@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ADMINISTRADOR</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="full-box page-header" style="background-color: rgb(206, 80, 84);">
+        <h2 class="text-center">
+            <i class="fab fa-dashcube fa-fw"></i> &nbsp; 
+        </h2>
+        <p class="text-justify">
+        </p>
+    </div>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="home.html" >DASHBOARD</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    
+    <div id="app4" align="center" width="200">
+        <div>
+            <div class="full-box page-header">
+                <h2 class="text-center">
+                    <i class="fab fa-dashcube fa-fw"></i> &nbsp; HORARIOS
+                </h2>
+                <p class="text-justify">
+                </p>
+            </div>
+            <br>
+            
+            <div style="text-align: left;" class="col-md-4">
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre"  maxlength="60" placeholder="Nombre" required v-model='nombre_horario'/>
+                </div>
+                <div class="form-group">
+                    <label for="descripcion">Descripcion:</label>
+                    <input type="text" class="form-control" id="descripcion" name="descripcion"  maxlength="60" placeholder="Agregue una descripcion" required v-model="descripcion"/>
+                </div>
+                <div class="form-group">
+                    <label for="fecha_inicio">Fecha de inicio:</label>
+                    <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required v-model="fecha_inicio"/>
+                </div>
+                <div class="form-group">
+                    <label for="fecha_fin">FECHA fin:</label>
+                    <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required v-model="fecha_fin"/>
+                </div>
+                <div class="form-group">
+                    <label for="turnoList" class="form-label">Turno:</label>
+                    <select class="form-select" id="turnoList" required v-model="id_turno">
+                      <option selected>Selecciona un turno</option>
+                      <option value="1">Diurno</option>
+                      <option value="2">Nocturno</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <button value="agregar" class="btn btn-success" @click="addHorario();" >CREAR</button>
+                  </div>
+            </div>
+
+        </div>
+        <br>
+
+        <table border="2" class="table">
+            <thead align="left">
+                <th scope="col">ID</th>
+                <th scope="col">NOMBRE</th>
+                <th scope="col">DESCRIPCION</th>
+                <th scope="col">FECHA INICIO</th>
+                <th scope="col">FECHA FIN</th>
+                <th scope="col">TURNO</th>
+            </thead>
+            <tbody class="table-group-divider">
+                <tr v-for="(horario, index) in horario">
+                    <td> {{ horario.id_horario }} </td>
+                    <td> {{ horario.nombre_horario }} </td>
+                    <td> {{ horario.descripcion }} </td>
+                    <td> {{ horario.fecha_inicio }} </td>
+                    <td> {{ horario.fecha_fin }} </td>
+                    <td> {{ horario.id_turno }} </td>
+                    <td> <button value="editar" class="btn btn-warning" @click="editHorario(index, horario.id_horario)"> EDITAR </button> </td>
+                    <td> <button value="eliminar" class="btn btn-danger" @click="deleteHorario(index, horario.id_horario)"> ELIMINAR </button> </td>
+                    <td> <a class="btn btn-primary" href="actividades.html" role="button">CREAR ACTIVIDAD</a> </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        
+    </div>
+
+    <script>
+        var app4 = new Vue({
+            el: '#app4',
+            data: {
+                horario: [],
+                nombre_horario: '',
+                descripcion: '',
+                fecha_inicio: '',
+                fecha_fin: '',
+                id_turno: ''
+            },
+            methods: {
+                obtenerHorario: function() {
+                    axios.post('api4.php', {
+                        request: 1
+                    })
+                    .then(function(response) {
+                        app4.horario = response.data;
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+                }, 
+
+                addHorario: function() {
+                    if(this.nombre_horario != '' && this.descripcion !='' && this.fecha_inicio != '' && this.fecha_fin !='' && this.id_turno !='') {
+                        axios.post('api4.php', {
+                            request: 2,
+                            nombre_horario: this.nombre_horario,
+                            descripcion: this.descripcion,
+                            fecha_inicio: this.fecha_inicio,
+                            fecha_fin: this.fecha_fin,
+                            id_turno: this.id_turno
+                        })
+                        .then(function(response) {
+                            app4.obtenerHorario();
+                            
+                            app4.id_horario = '';
+                            app4.nombre_horario = '';
+                            app4.descripcion = '';
+                            app4.fecha_inicio = '';
+                            app4.fecha_fin = '';
+                            app4.id_turno = '';
+                            
+
+                            alert(response.data);
+                        })
+                        .catch(function () {
+                            console.log(error);
+                        });
+                    } else {
+                        alert("Llenar los campos.");
+                    }
+                },
+
+                editHorario: function(index, id_horario) {
+                    var nombre_horario = this.nombre_horario;
+                    var descripcion = this.descripcion;
+                    var fecha_inicio = this.fecha_inicio;
+                    var fecha_fin = this.fecha_fin;
+                    var id_turno = this.id_turno;
+
+                    if(this.nombre_horario != '' && this.descripcion !='' && this.fecha_inicio != '' && this.fecha_fin !='' && this.id_turno !='') {
+                        axios.post('api4.php', {
+                            request: 3,
+                            id_horario: id_horario,
+                            nombre_horario: nombre_horario,
+                            descripcion: descripcion,
+                            fecha_inicio: fecha_inicio,
+                            fecha_fin: fecha_fin,
+                            id_turno: id_turno
+                        })
+                        .then(function(response) {
+                            app4.obtenerHorario();
+                            app4.nombre_horario = '';
+                            app4.descripcion = '';
+                            app4.fecha_inicio = '';
+                            app4.fecha_fin = '';
+                            app4.id_turno = '';
+                            alert(response.data);
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                        });
+                    }
+                },
+
+                deleteHorario: function(index, id_horario) {
+                    axios.post('api4.php', {
+                        request: 4,
+                        id_horario: id_horario
+                    })
+                    .then(function(response) {
+                        app4.horario.splice(index, 1);
+                        alert(response.data);
+                    })
+                    .catch( function(error) {
+                        console.log(error);
+                    });
+                }
+            },
+
+            created: function() {
+                this.obtenerHorario();
+            }
+        })
+    </script>
+</body>
+</html>
